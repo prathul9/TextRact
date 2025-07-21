@@ -1,0 +1,161 @@
+/* Global reset and body styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #c2e9fb, #a1c4fd);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Main container */
+.container {
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+}
+
+/* Title */
+.site-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #2c3e50;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+@keyframes popIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Card styling with glassmorphism */
+.card {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 460px;
+  margin: auto;
+  color: #333;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+
+/* Drag & Drop zone */
+.drop-zone {
+  border: 2px dashed #4f46e5;
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: 30px;
+  border-radius: 12px;
+  color: #333;
+  margin: 20px 0;
+  cursor: pointer;
+  position: relative;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.drop-zone:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.drop-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* File name display */
+.filename {
+  font-size: 0.95rem;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+/* Upload button */
+button {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  border: none;
+  padding: 12px 28px;
+  font-size: 1rem;
+  color: white;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #5a67d8, #6b46c1);
+}
+
+/* Success message */
+.success-msg {
+  margin-top: 20px;
+  font-weight: 500;
+  color: #16a34a;
+}
+
+/* Download button */
+.download-btn {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 22px;
+  background: linear-gradient(to right, #10b981, #34d399);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+}
+
+.download-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #059669, #10b981);
+}
+
+/* Welcome message */
+.welcome-msg {
+  color: #ffffff;
+  background: linear-gradient(to right, #667eea, #764ba2);
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: inline-block;
+  margin-bottom: 20px;
+  animation: fadeInSlide 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+@keyframes fadeInSlide {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
