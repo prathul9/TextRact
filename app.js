@@ -1,150 +1,89 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
-import "./App.css";
-import UserContext from "./UserContext";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./App.css";
 
 function App() {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState(null);
-  const [uploadHistory, setUploadHistory] = useState([]);
-  const fileInputRef = useRef(null);
-  const { username } = useContext(UserContext);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!username) {
-      navigate("/");
-    } else {
-      fetchHistory();
-    }
-  }, [username, navigate]);
-
-  const fetchHistory = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/history/${username}`);
-      setUploadHistory(response.data.history || []);
-    } catch (error) {
-      console.error("Error fetching history:", error);
-    }
-  };
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [downloadLink, setDownloadLink] = useState("");
+  const [history, setHistory] = useState([]);
+  const [username, setUsername] = useState("");
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setUploadSuccess(false);
-      setDownloadUrl(null);
-    }
+    setFile(e.target.files[0]);
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!file || !username) {
+      setMessage("Please select a file and enter your name.");
+      return;
+    }
 
     const formData = new FormData();
-    formData.append("image", selectedFile);
+    formData.append("file", file);
     formData.append("username", username);
 
     try {
-      const response = await axios.post("http://localhost:5000/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        },
-        withCredentials: true
-      });
-
-      const data = response.data;
-      setUploadSuccess(true);
-      setDownloadUrl(data.doc_url);
-      fetchHistory(); // refresh history after successful upload
+      const response = await axios.post("http://localhost:5000/upload", formData);
+      setMessage("Upload successful!");
+      setDownloadLink(response.data.download_link);
+      fetchHistory(); // refresh history after upload
     } catch (error) {
-      console.error("Upload error:", error);
-      alert("Failed to upload. Please try again.");
+      console.error(error);
+      setMessage("Upload failed.");
     }
   };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setUploadSuccess(false);
-      setDownloadUrl(null);
+  const fetchHistory = async () => {
+    if (!username) return;
+
+    try {
+      const response = await axios.get(`http://localhost:5000/history?username=${username}`);
+      setHistory(response.data.history || []);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleClickDropZone = () => {
-    fileInputRef.current.click();
-  };
+  // Automatically fetch history when username changes
+  useEffect(() => {
+    if (username) {
+      fetchHistory();
+    }
+  }, [username]);
 
   return (
     <div className="container">
-      <h1 className="site-title">TextRact</h1>
-      {username && <p className="welcome-msg">👋 Welcome, {username}!</p>}
+      <h2>Text and Table Extractor</h2>
 
-      <div className="card">
-        <h2>📝 Image to Editable Text & Table</h2>
+      <input
+        type="text"
+        placeholder="Enter your name"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <br />
+      <input type="file" onChange={handleFileChange} />
+      <br />
+      <button onClick={handleUpload}>Upload</button>
+      <p>{message}</p>
 
-        <div
-          className="drop-zone"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onClick={handleClickDropZone}
-        >
-          Drag & drop your image here or click to browse
-          <input
-            type="file"
-            accept="image/*,.pdf"
-            onChange={handleFileChange}
-            ref={fileInputRef}
-            style={{ display: "none" }}
-          />
-        </div>
+      {downloadLink && (
+        <a href={downloadLink} target="_blank" rel="noopener noreferrer">
+          Download Extracted Document
+        </a>
+      )}
 
-        {selectedFile && (
-          <p className="filename">Selected: {selectedFile.name}</p>
-        )}
-
-        <button onClick={handleUpload} disabled={!selectedFile}>
-          Upload
-        </button>
-
-        {uploadSuccess && downloadUrl && (
-          <>
-            <p className="success-msg">✅ File uploaded successfully!</p>
-            <a className="download-btn" href={downloadUrl} download>
-              ⬇ Download Result
-            </a>
-          </>
-        )}
-      </div>
-
-      {/* Upload History */}
-      <div className="card">
-        <h2>📜 Upload History</h2>
-        {uploadHistory.length === 0 ? (
-          <p>No history yet.</p>
-        ) : (
+      {history.length > 0 && (
+        <div className="history">
+          <h3>Your Upload History</h3>
           <ul>
-            {uploadHistory.map((entry, idx) => (
-              <li key={idx}>
-                <a
-                  href={`http://localhost:5000/download/${entry.filename}`}
-                  download
-                >
-                  {entry.filename}
-                </a>{" "}
-                — {entry.timestamp}
-              </li>
+            {history.map((file, index) => (
+              <li key={index}>{file}</li>
             ))}
           </ul>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
