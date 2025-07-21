@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from ExtractTable import ExtractTable
@@ -21,14 +22,14 @@ DB_PATH = "upload_history.db"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-# Initialize ExtractTable
+
 et_sess = ExtractTable(api_key="zt7Sf5wdRBiYqaKlEXaV9rH1BR40uJUPsPFtVkrk")
 
-# Initialize Gemini
+
 genai.configure(api_key="AIzaSyDs5tpMIcrqQyaOIeCa5RBZl1NgLoWrDgM")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Initialize database
+
 def init_db():
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
@@ -121,7 +122,7 @@ def upload_image():
     doc_path = os.path.join(OUTPUT_FOLDER, doc_filename)
     doc.save(doc_path)
 
-    # Save to DB
+    
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
